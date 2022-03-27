@@ -1,3 +1,3 @@
-export const xPathEval = (expression, node) => {
+export const xpathEval = (expression, node) => {
     return document.evaluate(expression, node, null, XPathResult.ANY_TYPE, null)
 }

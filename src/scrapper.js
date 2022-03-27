@@ -1,7 +1,7 @@
 import { Person } from "./modules/models/Person";
 import { Work } from "./modules/models/Work";
 import { loadPageContent } from "./modules/utils/autoscroll";
-import { xPathEval } from "./modules/utils/xpath"
+import { xpathEval } from "./modules/utils/xpath"
 
 const scrapProfile = async () => {
 

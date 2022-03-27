@@ -12,7 +12,10 @@ var loadPageContent = async (loadingDelaySeconds = 5) => {
 };
 
 // src/scrapper.js
-loadPageContent();
-var fullname = document.getElementsByTagName("h1")[0].textContent;
-var workExperience = [];
-console.log(fullname, workExperience);
+var scrapProfile = async () => {
+  await loadPageContent();
+  let fullname = document.getElementsByTagName("h1")[0].textContent;
+  let workExperience = [];
+  console.log({ fullname, workExperience });
+};
+scrapProfile();

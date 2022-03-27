@@ -5,10 +5,10 @@ import { XPath } from "./modules/utils/xpath"
 const scrollPage = async (seconds) => {
     while (true) {
         let pageHeight = document.body.scrollHeight;
-        window.scrollTo(0, pageHeight);
+        window.scrollTo({top: pageHeight, behavior: "smooth"});
         await new Promise(r => setTimeout(r, seconds * 1000));
         if (pageHeight === document.body.scrollHeight) {
-            window.scrollTo(0, 0);
+            window.scrollTo({top: 0, behavior: "smooth"});
             break
         }
     }

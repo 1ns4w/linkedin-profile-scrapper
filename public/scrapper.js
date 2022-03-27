@@ -2,7 +2,7 @@
 var loadPageContent = async (loadingDelaySeconds = 5) => {
   while (true) {
     let previousScrollHeight = document.documentElement.scrollHeight;
-    window.scrollTo({ top: pageHeight, behavior: "smooth" });
+    window.scrollTo({ top: previousScrollHeight, behavior: "smooth" });
     await new Promise((r) => setTimeout(r, loadingDelaySeconds * 1e3));
     if (previousScrollHeight === document.documentElement.scrollHeight) {
       window.scrollTo({ top: 0, behavior: "smooth" });

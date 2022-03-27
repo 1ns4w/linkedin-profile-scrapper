@@ -1,0 +1,16 @@
+{
+  "name": "linps",
+  "version": "1.0.0",
+  "description": "chrome extension for scrapping LinkedIn profiles using JavaScript",
+  "main": "public/background.js",
+  "author": "Insaw",
+  "license": "MIT",
+  "dependencies": {
+    "dexie": "^3.2.1",
+    "esbuild": "^0.14.28"
+  },
+  "scripts": {
+    "build": "esbuild src/background.js src/scrapper.js --outdir=public --bundle",
+    "watch": "esbuild src/background.js src/scrapper.js --outdir=public --bundle --watch"
+  }
+}

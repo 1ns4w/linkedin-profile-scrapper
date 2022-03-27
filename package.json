@@ -10,7 +10,7 @@
     "esbuild": "^0.14.28"
   },
   "scripts": {
-    "build": "esbuild src/background.js src/scrapper.js --outdir=public --bundle",
-    "watch": "esbuild src/background.js src/scrapper.js --outdir=public --bundle --watch"
+    "build": "esbuild --format=esm src/background.js src/scrapper.js --outdir=public --bundle",
+    "watch": "esbuild --format=esm src/background.js src/scrapper.js --outdir=public --bundle --watch"
   }
 }

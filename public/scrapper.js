@@ -1,14 +1,16 @@
 // src/scrapper.js
-var scrollPage = async () => {
+var scrollPage = async (seconds) => {
   while (true) {
     let pageHeight = document.body.scrollHeight;
-    console.log(pageHeight);
     window.scrollTo(0, pageHeight);
-    await new Promise((r) => setTimeout(r, 5e3));
+    await new Promise((r) => setTimeout(r, seconds * 1e3));
     if (pageHeight === document.body.scrollHeight) {
-      console.log("Bye world");
+      window.scrollTo(0, 0);
       break;
     }
   }
 };
-scrollPage();
+scrollPage(5);
+var fullname = document.getElementsByTagName("h1")[0].textContent;
+var workExperience = [];
+console.log(fullname, workExperience);

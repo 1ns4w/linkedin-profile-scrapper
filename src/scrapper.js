@@ -2,26 +2,24 @@ import { Person } from "./modules/models/Person";
 import { Work } from "./modules/models/Work";
 import { XPath } from "./modules/utils/xpath"
 
-const scrollPage = async () => {
+const scrollPage = async (seconds) => {
     while (true) {
         let pageHeight = document.body.scrollHeight;
-        console.log(pageHeight)
         window.scrollTo(0, pageHeight);
-        await new Promise(r => setTimeout(r, 5000));
+        await new Promise(r => setTimeout(r, seconds * 1000));
         if (pageHeight === document.body.scrollHeight) {
-            console.log("Bye world")
+            window.scrollTo(0, 0);
             break
         }
     }
 }
 
-scrollPage();
+scrollPage(5);
 
-/*
 let fullname = document.getElementsByTagName("h1")[0].textContent
-let workSection = XPath("(//section[.//span[contains(text(), 'Experiencia')]]//ul)[1]", document).iterateNext();
 let workExperience = []
+console.log(fullname, workExperience)
 
-console.log(fullname, workSection)
+/*let workSection = XPath("(//section[.//span[contains(text(), 'Experiencia')]]//ul)[1]", document).iterateNext();
 let port = chrome.runtime.connect({name:'safePort'});
 port.postMessage(fullname, workExperience);*/

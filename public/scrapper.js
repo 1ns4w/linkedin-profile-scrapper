@@ -1,5 +1,5 @@
-// src/scrapper.js
-var scrollPage = async (seconds) => {
+// src/modules/utils/autoscroll.js
+var loadPageContent = async (seconds = 5) => {
   while (true) {
     let pageHeight = document.body.scrollHeight;
     window.scrollTo({ top: pageHeight, behavior: "smooth" });
@@ -10,7 +10,9 @@ var scrollPage = async (seconds) => {
     }
   }
 };
-scrollPage(5);
+
+// src/scrapper.js
+loadPageContent();
 var fullname = document.getElementsByTagName("h1")[0].textContent;
 var workExperience = [];
 console.log(fullname, workExperience);

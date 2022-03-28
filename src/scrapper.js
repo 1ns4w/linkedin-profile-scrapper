@@ -15,6 +15,8 @@ const scrapExperienceSection = () => {
     let workSectionsIterator = workSections.iterateNext();
     let workExperiences = []
 
+    console.log("A");
+
     while (workSectionsIterator) {
 
         let isWorkHistory = xpathEval("(.)[.//span[@class = 'pvs-entity__path-node']]", workSectionsIterator)

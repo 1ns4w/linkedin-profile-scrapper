@@ -58,6 +58,7 @@ var scrapExperienceSection = () => {
   let workSections = xpathEval("(//section[.//span[contains(text(), 'Experiencia')] or .//h2[contains(@class, 't-20')]]//ul)[1]/li[.//a[contains(@href, 'company') or contains(@href, 'linkedin.com/search')]]", document);
   let workSectionsIterator = workSections.iterateNext();
   let workExperiences = [];
+  console.log("A");
   while (workSectionsIterator) {
     let isWorkHistory = xpathEval("(.)[.//span[@class = 'pvs-entity__path-node']]", workSectionsIterator);
     let isWorkHistoryIterator = isWorkHistory?.iterateNext();

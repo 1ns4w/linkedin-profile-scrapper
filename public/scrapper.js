@@ -77,7 +77,7 @@ var scrapProfile = async () => {
       let startDate = dateRange[0];
       let endDate = dateRange[dateRange.length - 1];
       let workPosition = new WorkPosition(workPositionName, startDate, endDate);
-      workExperiences.push(new WorkExperience(company, totalDuration, [workPosition]));
+      workExperiences.push(new WorkExperience(company, totalDuration, [workPosition], totalDuration));
     }
     workSectionsIterator = workSections.iterateNext();
   }

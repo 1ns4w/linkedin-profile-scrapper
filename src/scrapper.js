@@ -35,8 +35,8 @@ const scrapProfile = async () => {
 
         else {
             let experienceData = xpathEval("./div/div[2]/div/div[1][./*]", workSectionsIterator).iterateNext();
-            let company = cleanText(xpathEval("./div//span[@aria-hidden]", experienceData).iterateNext().textContent);
-            let workPosition = cleanText(xpathEval("./span[1]//span[@aria-hidden]", experienceData).iterateNext().textContent);
+            let workPosition = cleanText(xpathEval("./div//span[@aria-hidden]", experienceData).iterateNext().textContent);
+            let company = cleanText(xpathEval("./span[1]//span[@aria-hidden]", experienceData).iterateNext().textContent);
             let duration = cleanText(xpathEval("./span[2]//span[@aria-hidden]", experienceData).iterateNext().textContent);
             workExperiences.push(new WorkExperience(company, duration, workPosition));
         }

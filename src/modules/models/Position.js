@@ -1,9 +1,9 @@
 export class WorkPosition {
-    constructor(position, description, duration, startDate, endDate) {
+    constructor(position, startDate, endDate, duration, description) {
         this.position = position;
-        this.description = description;
-        this.duration = duration;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.duration = duration;
+        this.description = description;
     }
 }

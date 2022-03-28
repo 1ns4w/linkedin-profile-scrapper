@@ -48,13 +48,20 @@ var scrapProfile = async () => {
   while (workSectionsIterator) {
     let isWorkHistory = xpathEval("(.)[.//span[@class = 'pvs-entity__path-node']]", workSectionsIterator);
     let isWorkHistoryIterator = isWorkHistory?.iterateNext();
-    while (isWorkHistoryIterator) {
-      let company = cleanText(xpathEval(".//a[@data-field='experience_company_logo'][./span]/div/span/span[1]", isWorkHistoryIterator).iterateNext().textContent);
-      let totalDuration = cleanText(xpathEval(".//a[@data-field='experience_company_logo'][./span]/span/span[1]", isWorkHistoryIterator).iterateNext().textContent);
-      console.log(company + " " + totalDuration);
-      let workPositions = [];
-      workExperiences.push(new WorkExperience(company, totalDuration, workPositions));
-      isWorkHistoryIterator = isWorkHistory.iterateNext();
+    if (isWorkHistoryIterator) {
+      while (isWorkHistoryIterator) {
+        let company = cleanText(xpathEval(".//a[@data-field='experience_company_logo'][./span]/div/span/span[1]", isWorkHistoryIterator).iterateNext().textContent);
+        let totalDuration = cleanText(xpathEval(".//a[@data-field='experience_company_logo'][./span]/span/span[1]", isWorkHistoryIterator).iterateNext().textContent);
+        let workPositions = [];
+        workExperiences.push(new WorkExperience(company, totalDuration, workPositions));
+        isWorkHistoryIterator = isWorkHistory.iterateNext();
+      }
+    } else {
+      let experienceData = xpathEval("./div/div[2]/div/div[1][./*]", workSectionsIterator).iterateNext();
+      let company = cleanText(xpathEval("./div//span[@aria-hidden]", experienceData).iterateNext().textContent);
+      let duration = cleanText(xpathEval("./span[1]//span[@aria-hidden]", experienceData).iterateNext().textContent);
+      let workPosition = cleanText(xpathEval("./span[2]//span[@aria-hidden]", experienceData).iterateNext().textContent);
+      workExperiences.push(new WorkExperience(company, duration, workPosition));
     }
     workSectionsIterator = workSections.iterateNext();
   }

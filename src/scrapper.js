@@ -9,26 +9,8 @@ const findSection = (sectionName) => {
     return xpathEval(`//section[./div[@id="${sectionName}"]]/div[3]`, document).iterateNext();
 }
 
-const scrapExperienceSection = () => {}
-
-const scrapProfile = async () => {
-
-    await loadPageContent();
-
-    let fullname = document.getElementsByTagName("h1")[0].textContent
-
-    let workSection = findSection("experience")
-    let workSectionDropdown = xpathEval("./div/a", workSection).iterateNext()
-
-    if (workSectionDropdown) {
-        workSectionDropdown.click();
-        await new Promise(r => setTimeout(r, 8000));
-        scrapExperienceSection();
-        let returnButton = xpathEval("//button[contains(@aria-label, 'Volver')]", document).iterateNext();
-        returnButton.click();
-    }
-
-    /*
+const scrapExperienceSection = () => {
+    
     let workSections = xpathEval("(//section[.//span[contains(text(), 'Experiencia')]]//ul)[1]/li[.//a[@data-field='experience_company_logo']][//ul[count(li) > 1]]", document)
     let workSectionsIterator = workSections.iterateNext();
     let workExperiences = []
@@ -68,10 +50,33 @@ const scrapProfile = async () => {
 
         workSectionsIterator = workSections.iterateNext();
     }
+    return workExperiences;
+}
+
+const scrapProfile = async () => {
+
+    await loadPageContent();
+
+    let fullname = document.getElementsByTagName("h1")[0].textContent
+    let workExperiences = null;
+
+    let workSection = findSection("experience")
+    let workSectionDropdown = xpathEval("./div/a", workSection).iterateNext()
+
+    if (workSectionDropdown) {
+        workSectionDropdown.click();
+        await new Promise(r => setTimeout(r, 8000));
+        workExperiences = scrapExperienceSection();
+        let returnButton = xpathEval("//button[contains(@aria-label, 'Volver')]", document).iterateNext();
+        returnButton.click();
+    }
+
+    else {
+        workExperiences = scrapExperienceSection();
+    }
 
     let port = chrome.runtime.connect({name:'safePort'});
     port.postMessage(new Person(fullname, workExperiences));
-    */
 }
 
 scrapProfile();

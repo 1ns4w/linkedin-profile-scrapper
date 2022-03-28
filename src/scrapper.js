@@ -5,16 +5,25 @@ import { loadPageContent } from "./modules/utils/autoscroll";
 import { xpathEval } from "./modules/utils/xpath"
 import { cleanText} from "./modules/utils/cleantext"
 
+const findSection = (sectionName) => {
+    return xpathEval(`//section[./div[@id="${sectionName}"]]/div[3]`, document).iterateNext();
+}
+
+const scrapExperienceSection = () => {}
+
 const scrapProfile = async () => {
 
     await loadPageContent();
+
     let fullname = document.getElementsByTagName("h1")[0].textContent
-    let workSection = xpathEval("//section[./div[@id='experience']]/div[3]", document).iterateNext();
+
+    let workSection = findSection("experience")
     let workSectionDropdown = xpathEval("./div/a", workSection).iterateNext()
 
     if (workSectionDropdown) {
         workSectionDropdown.click();
         await new Promise(r => setTimeout(r, 8000));
+        scrapExperienceSection();
         let returnButton = xpathEval("//button[contains(@aria-label, 'Volver')]", document).iterateNext();
         returnButton.click();
     }

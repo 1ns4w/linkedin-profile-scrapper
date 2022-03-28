@@ -17,11 +17,11 @@ var WorkExperience = class {
 
 // src/modules/models/Position.js
 var WorkPosition = class {
-  constructor(position, startDate, endDate, duration, description) {
+  constructor(position, duration, startDate, endDate, description) {
     this.position = position;
+    this.duration = duration;
     this.startDate = startDate;
     this.endDate = endDate;
-    this.duration = duration;
     this.description = description;
   }
 };
@@ -76,7 +76,7 @@ var scrapProfile = async () => {
       let dateRange = durationData[0].split(" - ");
       let startDate = dateRange[0];
       let endDate = dateRange[dateRange.length - 1];
-      let workPosition = new WorkPosition(workPositionName, startDate, endDate, totalDuration);
+      let workPosition = new WorkPosition(workPositionName, totalDuration, startDate, endDate);
       workExperiences.push(new WorkExperience(company, totalDuration, [workPosition]));
     }
     workSectionsIterator = workSections.iterateNext();

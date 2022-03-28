@@ -1,6 +1,5 @@
 import { Person } from "./modules/models/Person";
 import { WorkExperience } from "./modules/models/Work";
-import { WorkPosition } from "./modules/models/Position";
 import { loadPageContent } from "./modules/utils/autoscroll";
 import { xpathEval } from "./modules/utils/xpath"
 import { cleanText} from "./modules/utils/cleantext"
@@ -11,31 +10,29 @@ const findSection = (sectionName) => {
 
 const scrapExperienceSection = () => {
     
-    let workSections = xpathEval("(//section[.//span[contains(text(), 'Experiencia')] or .//h2[contains(@class, 't-20')]]//ul)[1]/li[.//a[contains(@href, 'company') or contains(@href, 'linkedin.com/search')]]//div[contains(@class, 'pvs-entity') and count(./div) = 2 and not(.//span[contains(@class, 'pvs-entity__path-node')])]", document)
-    let workSectionsIterator = workSections.iterateNext();
+    let worksIterator = xpathEval("(//section[.//span[contains(text(), 'Experiencia')] or .//h2[contains(@class, 't-20')]]//ul)[1]/li[.//a[contains(@href, 'company') or contains(@href, 'linkedin.com/search')]]//div[contains(@class, 'pvs-entity') and count(./div) = 2 and not(.//span[contains(@class, 'pvs-entity__path-node')])]", document)
+    let thisWork = worksIterator.iterateNext();
+
     let workExperiences = []
 
-    console.log("A");
+    while (thisWork) {
 
-    while (workSectionsIterator) {
+        let thisWorkHistory = xpathEval("(.)/../../../../../../../../../div[1][./a]", thisWork).iterateNext();
 
-        let isWorkHistory = xpathEval("(.)[.//span[@class = 'pvs-entity__path-node']]", workSectionsIterator)
-        let isWorkHistoryIterator = isWorkHistory?.iterateNext();
-
-        if (isWorkHistoryIterator) {
+        if (thisWorkHistory) {
             
-            while (isWorkHistoryIterator) {
-            
-            let company = cleanText(xpathEval(".//a[@data-field='experience_company_logo'][./span]/div/span/span[1]", isWorkHistoryIterator).iterateNext().textContent)
-            let totalDuration = cleanText(xpathEval(".//a[@data-field='experience_company_logo'][./span]/span/span[1]", isWorkHistoryIterator).iterateNext().textContent)
+            let company = cleanText(xpathEval("//span[contains(@class, 't-bold')]/span[@aria-hidden]", thisWorkHistory).iterateNext().textContent)
+            let position = cleanText(xpathEval("//span[contains(@class, 't-bold')]/span[@aria-hidden]", thisWork).iterateNext().textContent)
+            let durationInfo = cleanText(xpathEval("//span[contains(@class, 't-normal')]/span[@aria-hidden]", thisWork).iterateNext().textContent).split(' · ');
+            let totalDuration = durationInfo[1]
+            let durationRange = durationInfo[0].split(' - ')
+            let startDate = durationRange[0]
+            let endDate = durationRange[durationRange.length - 1]
 
-            let workPositions = []
-
-            workExperiences.push(new WorkExperience(company, totalDuration, workPositions))
-            isWorkHistoryIterator = isWorkHistory.iterateNext();
-
-            }
+            workExperiences.push(new WorkExperience(company, position, totalDuration, startDate, endDate))
         }
+
+        /*
 
         else {
             let experienceData = xpathEval("./div/div[2]/div/div[1][./*]", workSectionsIterator).iterateNext();
@@ -50,7 +47,9 @@ const scrapExperienceSection = () => {
             workExperiences.push(new WorkExperience(company, totalDuration, [workPosition]));
         }
 
-        workSectionsIterator = workSections.iterateNext();
+        */
+
+        thisWork = worksIterator.iterateNext();
     }
     return workExperiences;
 }

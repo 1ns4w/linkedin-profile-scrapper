@@ -33,22 +33,30 @@ var xpathEval = (expression, node) => {
   return document.evaluate(expression, node, null, XPathResult.ANY_TYPE, null);
 };
 
+// src/modules/utils/cleantext.js
+var cleanText = (text) => {
+  return text.match(/[^\s|\n]+/ig).join(" ");
+};
+
 // src/scrapper.js
 var scrapProfile = async () => {
   await loadPageContent();
   let fullname = document.getElementsByTagName("h1")[0].textContent;
-  let workSections = xpathEval("(//section[.//span[contains(text(), 'Experiencia')]]//ul)[1]/li[.//a[@data-field='experience_company_logo']]", document);
+  let workSections = xpathEval("(//section[.//span[contains(text(), 'Experiencia')]]//ul)[1]/li[.//a[@data-field='experience_company_logo']][//ul[count(li) > 1]]", document);
   let workSectionsIterator = workSections.iterateNext();
   let workExperiences = [];
   while (workSectionsIterator) {
-    let isWorkHistory = xpathEval("[.//ul[count(li) > 1]]", workSectionsIterator);
-    let isWorkHistoryIterator = isWorkHistory.iterateNext();
-    if (isWorkHistoryIterator) {
-      let company = xpathEval("//a[@data-field='experience_company_logo'][./span]/div", isWorkHistoryIterator).iterateNext().textContent;
-      let totalDuration = xpathEval("//a[@data-field='experience_company_logo'][./span]/span/span[1]", isWorkHistoryIterator).iterateNext().textContent;
+    let isWorkHistory = xpathEval("(.)[.//span[@class = 'pvs-entity__path-node']]", workSectionsIterator);
+    let isWorkHistoryIterator = isWorkHistory?.iterateNext();
+    while (isWorkHistoryIterator) {
+      let company = cleanText(xpathEval(".//a[@data-field='experience_company_logo'][./span]/div/span/span[1]", isWorkHistoryIterator).iterateNext().textContent);
+      let totalDuration = cleanText(xpathEval(".//a[@data-field='experience_company_logo'][./span]/span/span[1]", isWorkHistoryIterator).iterateNext().textContent);
+      console.log(company + " " + totalDuration);
       let workPositions = [];
       workExperiences.push(new WorkExperience(company, totalDuration, workPositions));
+      isWorkHistoryIterator = isWorkHistory.iterateNext();
     }
+    workSectionsIterator = workSections.iterateNext();
   }
   let port = chrome.runtime.connect({ name: "safePort" });
   port.postMessage(new Person(fullname, workExperiences));

@@ -62,7 +62,15 @@ var scrapExperienceSection = () => {
       workExperiences.push(new WorkExperience(company, position, totalDuration, startDate, endDate));
       console.log(position);
     } else {
-      console.log("Hello world!");
+      let company = cleanText(xpathEval("(.//span[contains(@class, 't-normal')]/span[@aria-hidden])[1]", thisWork).iterateNext().textContent);
+      let position = cleanText(xpathEval(".//span[contains(@class, 't-bold')]/span[@aria-hidden]", thisWork).iterateNext().textContent);
+      let durationInfo = cleanText(xpathEval("(.//span[contains(@class, 't-normal')]/span[@aria-hidden])[2]", thisWork).iterateNext().textContent).split(" \xB7 ");
+      let totalDuration = durationInfo[1];
+      let durationRange = durationInfo[0].split(" - ");
+      let startDate = durationRange[0];
+      let endDate = durationRange[durationRange.length - 1];
+      workExperiences.push(new WorkExperience(company, position, totalDuration, startDate, endDate));
+      console.log(position);
     }
     thisWork = worksIterator.iterateNext();
   }

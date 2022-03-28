@@ -34,9 +34,9 @@ const scrapExperienceSection = () => {
         }
 
         else {
-            let company = cleanText(xpathEval("", thisWork).iterateNext().textContent)
-            let position = cleanText(xpathEval("", thisWork).iterateNext().textContent)
-            let durationInfo = cleanText(xpathEval("", thisWork).iterateNext().textContent).split(' · ');
+            let company = cleanText(xpathEval("(.//span[contains(@class, 't-normal')]/span[@aria-hidden])[1]", thisWork).iterateNext().textContent)
+            let position = cleanText(xpathEval(".//span[contains(@class, 't-bold')]/span[@aria-hidden]", thisWork).iterateNext().textContent)
+            let durationInfo = cleanText(xpathEval("(.//span[contains(@class, 't-normal')]/span[@aria-hidden])[2]", thisWork).iterateNext().textContent).split(' · ');
             let totalDuration = durationInfo[1]
             let durationRange = durationInfo[0].split(' - ')
             let startDate = durationRange[0]

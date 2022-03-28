@@ -9,6 +9,17 @@ const scrapProfile = async () => {
 
     await loadPageContent();
     let fullname = document.getElementsByTagName("h1")[0].textContent
+    let workSection = xpathEval("//section[./div[@id='experience']]/div[3]", document).iterateNext();
+    let workSectionDropdown = xpathEval("./div/a", workSection).iterateNext()
+
+    if (workSectionDropdown) {
+        workSectionDropdown.click();
+        await new Promise(r => setTimeout(r, 8000));
+        let returnButton = xpathEval("//button[contains(@aria-label, 'Volver')]", document).iterateNext();
+        returnButton.click();
+    }
+
+    /*
     let workSections = xpathEval("(//section[.//span[contains(text(), 'Experiencia')]]//ul)[1]/li[.//a[@data-field='experience_company_logo']][//ul[count(li) > 1]]", document)
     let workSectionsIterator = workSections.iterateNext();
     let workExperiences = []
@@ -51,6 +62,7 @@ const scrapProfile = async () => {
 
     let port = chrome.runtime.connect({name:'safePort'});
     port.postMessage(new Person(fullname, workExperiences));
+    */
 }
 
 scrapProfile();

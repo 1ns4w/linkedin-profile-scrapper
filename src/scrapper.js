@@ -11,7 +11,7 @@ const findSection = (sectionName) => {
 
 const scrapExperienceSection = () => {
     
-    let workSections = xpathEval("(//section[.//span[contains(text(), 'Experiencia')] or .//h2[contains(@class, 't-20')]]//ul)[1]/li[.//a[contains(@href, 'company') or contains(@href, 'linkedin.com/search')]]", document)
+    let workSections = xpathEval("(//section[.//span[contains(text(), 'Experiencia')] or .//h2[contains(@class, 't-20')]]//ul)[1]/li[.//a[contains(@href, 'company') or contains(@href, 'linkedin.com/search')]]//div[contains(@class, 'pvs-entity') and count(./div) = 2 and not(.//span[contains(@class, 'pvs-entity__path-node')])]", document)
     let workSectionsIterator = workSections.iterateNext();
     let workExperiences = []
 

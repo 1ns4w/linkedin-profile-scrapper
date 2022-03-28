@@ -58,7 +58,7 @@ const scrapProfile = async () => {
     await loadPageContent();
 
     let fullname = document.getElementsByTagName("h1")[0].textContent
-    let workExperiences = null;
+    let workExperiences;
 
     let workSection = findSection("experience")
     let workSectionDropdown = xpathEval("./div/a", workSection).iterateNext()

@@ -11,7 +11,7 @@ const findSection = (sectionName) => {
 
 const scrapExperienceSection = () => {
     
-    let workSections = xpathEval("(//section[.//span[contains(text(), 'Experiencia')]]//ul)[1]/li[.//a[@data-field='experience_company_logo']][//ul[count(li) > 1]]", document)
+    let workSections = xpathEval("(//section[.//span[contains(text(), 'Experiencia')] or .//h2[contains(text(),'Experiencia')]]//ul)[1]/li[.//a[contains(@href, 'company') or contains(@href, 'linkedin.com/search')]]", document)
     let workSectionsIterator = workSections.iterateNext();
     let workExperiences = []
 

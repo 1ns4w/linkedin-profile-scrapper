@@ -55,7 +55,7 @@ var findSection = (sectionName) => {
   return xpathEval(`//section[./div[@id="${sectionName}"]]/div[3]`, document).iterateNext();
 };
 var scrapExperienceSection = () => {
-  let workSections = xpathEval("(//section[.//span[contains(text(), 'Experiencia')] or .//h2[contains(text(), 'Experiencia')]]//ul)[1]/li[.//a[contains(@href, 'company') or contains(@href, 'linkedin.com/search')]]", document);
+  let workSections = xpathEval("(//section[.//span[contains(text(), 'Experiencia')] or .//h2[contains(@class, 't-20')]]//ul)[1]/li[.//a[contains(@href, 'company') or contains(@href, 'linkedin.com/search')]]", document);
   let workSectionsIterator = workSections.iterateNext();
   let workExperiences = [];
   while (workSectionsIterator) {

@@ -30,7 +30,6 @@ const scrapExperienceSection = () => {
             let endDate = durationRange[durationRange.length - 1]
 
             workExperiences.push(new WorkExperience(company, position, totalDuration, startDate, endDate))
-            console.log(position);
         }
 
         else {
@@ -43,7 +42,6 @@ const scrapExperienceSection = () => {
             let endDate = durationRange[durationRange.length - 1]
 
             workExperiences.push(new WorkExperience(company, position, totalDuration, startDate, endDate))
-            console.log(position);
         }
 
         thisWork = worksIterator.iterateNext();

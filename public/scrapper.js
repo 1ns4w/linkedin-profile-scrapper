@@ -41,36 +41,46 @@ var cleanText = (text) => {
   return text.match(/[^\s|\n]+/ig).join(" ");
 };
 
+// config/env.js
+var XPATH_SECTION = (sectionName) => `//section[./div[@id="${sectionName}"]]/div[3]`;
+var XPATH_WORK_EXPERIENCE_CONTAINERS = "(//section[.//span[contains(text(), 'Experiencia')] or .//h2[contains(@class, 't-20')]]//ul)[1]/li[.//a[contains(@href, 'company') or contains(@href, 'linkedin.com/search')]]//div[contains(@class, 'pvs-entity') and count(./div) = 2 and not(.//span[contains(@class, 'pvs-entity__path-node')])]";
+var XPATH_WORK_EXPERIENCE_HISTORY_CLUE = "(.)/../../../../../../../../../div[1][./a]";
+var XPATH_HISTORY_WORK_EXPERIENCE_COMPANY_OR_POSITION = ".//span[contains(@class, 't-bold')]/span[@aria-hidden]";
+var XPATH_HISTORY_WORK_EXPERIENCE_DURATION_INFO = ".//span[contains(@class, 't-normal')]/span[@aria-hidden]";
+var XPATH_WORK_EXPERIENCE_COMPANY = "(.//span[contains(@class, 't-normal')]/span[@aria-hidden])[1]";
+var XPATH_WORK_EXPERIENCE_POSITION = ".//span[contains(@class, 't-bold')]/span[@aria-hidden]";
+var XPATH_WORK_EXPERIENCE_DURATION_INFO = "(.//span[contains(@class, 't-normal')]/span[@aria-hidden])[2]";
+var XPATH_WORK_EXPERIENCE_RETURN_CLUE = "//button[contains(@aria-label, 'Volver')]";
+var XPATH_WORK_EXPERIENCE_DROPDOWN_CLUE = "./div/a";
+
 // src/scrapper.js
 var findSection = (sectionName) => {
-  return xpathEval(`//section[./div[@id="${sectionName}"]]/div[3]`, document).iterateNext();
+  return xpathEval(XPATH_SECTION(sectionName), document).iterateNext();
 };
 var scrapExperienceSection = () => {
-  let worksIterator = xpathEval("(//section[.//span[contains(text(), 'Experiencia')] or .//h2[contains(@class, 't-20')]]//ul)[1]/li[.//a[contains(@href, 'company') or contains(@href, 'linkedin.com/search')]]//div[contains(@class, 'pvs-entity') and count(./div) = 2 and not(.//span[contains(@class, 'pvs-entity__path-node')])]", document);
+  let worksIterator = xpathEval(XPATH_WORK_EXPERIENCE_CONTAINERS, document);
   let thisWork = worksIterator.iterateNext();
   let workExperiences = [];
   while (thisWork) {
-    let thisWorkHistory = xpathEval("(.)/../../../../../../../../../div[1][./a]", thisWork).iterateNext();
+    let thisWorkHistory = xpathEval(XPATH_WORK_EXPERIENCE_HISTORY_CLUE, thisWork).iterateNext();
     if (thisWorkHistory) {
-      let company = cleanText(xpathEval(".//span[contains(@class, 't-bold')]/span[@aria-hidden]", thisWorkHistory).iterateNext().textContent);
-      let position = cleanText(xpathEval(".//span[contains(@class, 't-bold')]/span[@aria-hidden]", thisWork).iterateNext().textContent);
-      let durationInfo = cleanText(xpathEval(".//span[contains(@class, 't-normal')]/span[@aria-hidden]", thisWork).iterateNext().textContent).split(" \xB7 ");
+      let company = cleanText(xpathEval(XPATH_HISTORY_WORK_EXPERIENCE_COMPANY_OR_POSITION, thisWorkHistory).iterateNext().textContent);
+      let position = cleanText(xpathEval(XPATH_HISTORY_WORK_EXPERIENCE_COMPANY_OR_POSITION, thisWork).iterateNext().textContent);
+      let durationInfo = cleanText(xpathEval(XPATH_HISTORY_WORK_EXPERIENCE_DURATION_INFO, thisWork).iterateNext().textContent).split(" \xB7 ");
       let totalDuration = durationInfo[1];
       let durationRange = durationInfo[0].split(" - ");
       let startDate = durationRange[0];
       let endDate = durationRange[durationRange.length - 1];
       workExperiences.push(new WorkExperience(company, position, totalDuration, startDate, endDate));
-      console.log(position);
     } else {
-      let company = cleanText(xpathEval("(.//span[contains(@class, 't-normal')]/span[@aria-hidden])[1]", thisWork).iterateNext().textContent);
-      let position = cleanText(xpathEval(".//span[contains(@class, 't-bold')]/span[@aria-hidden]", thisWork).iterateNext().textContent);
-      let durationInfo = cleanText(xpathEval("(.//span[contains(@class, 't-normal')]/span[@aria-hidden])[2]", thisWork).iterateNext().textContent).split(" \xB7 ");
+      let company = cleanText(xpathEval(XPATH_WORK_EXPERIENCE_COMPANY, thisWork).iterateNext().textContent);
+      let position = cleanText(xpathEval(XPATH_WORK_EXPERIENCE_POSITION, thisWork).iterateNext().textContent);
+      let durationInfo = cleanText(xpathEval(XPATH_WORK_EXPERIENCE_DURATION_INFO, thisWork).iterateNext().textContent).split(" \xB7 ");
       let totalDuration = durationInfo[1];
       let durationRange = durationInfo[0].split(" - ");
       let startDate = durationRange[0];
       let endDate = durationRange[durationRange.length - 1];
       workExperiences.push(new WorkExperience(company, position, totalDuration, startDate, endDate));
-      console.log(position);
     }
     thisWork = worksIterator.iterateNext();
   }
@@ -81,13 +91,13 @@ var scrapProfile = async () => {
   let fullname = document.getElementsByTagName("h1")[0].textContent;
   let workExperiences;
   let workSection = findSection("experience");
-  let workSectionDropdown = xpathEval("./div/a", workSection).iterateNext();
+  let workSectionDropdown = xpathEval(XPATH_WORK_EXPERIENCE_DROPDOWN_CLUE, workSection).iterateNext();
   if (workSectionDropdown) {
     workSectionDropdown.click();
     await new Promise((r) => setTimeout(r, 8e3));
     workExperiences = scrapExperienceSection();
     await new Promise((r) => setTimeout(r, 8e3));
-    let returnButton = xpathEval("//button[contains(@aria-label, 'Volver')]", document).iterateNext();
+    let returnButton = xpathEval(XPATH_WORK_EXPERIENCE_RETURN_CLUE, document).iterateNext();
     returnButton.click();
   } else {
     workExperiences = scrapExperienceSection();

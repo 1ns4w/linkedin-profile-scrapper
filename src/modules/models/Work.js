@@ -1,7 +1,7 @@
-export class Work {
-    constructor(company, position, duration) {
+export class WorkExperience {
+    constructor(company, totalDuration, workPositions) {
         this.company = company;
-        this.position = position;
-        this.duration = duration;
+        this.totalDuration = totalDuration;
+        this.workPositions = workPositions;
     }
 }

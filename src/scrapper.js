@@ -42,8 +42,8 @@ const scrapProfile = async () => {
             let dateRange = durationData[0].split(' - ')
             let startDate = dateRange[0]
             let endDate = dateRange[dateRange.length - 1]
-            let workPosition = new WorkPosition(workPositionName, startDate, endDate)
-            workExperiences.push(new WorkExperience(company, totalDuration, [workPosition], totalDuration));
+            let workPosition = new WorkPosition(workPositionName, startDate, endDate, totalDuration)
+            workExperiences.push(new WorkExperience(company, totalDuration, [workPosition]));
         }
 
         workSectionsIterator = workSections.iterateNext();

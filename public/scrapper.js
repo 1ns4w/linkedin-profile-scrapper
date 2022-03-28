@@ -52,14 +52,15 @@ var scrapExperienceSection = () => {
   while (thisWork) {
     let thisWorkHistory = xpathEval("(.)/../../../../../../../../../div[1][./a]", thisWork).iterateNext();
     if (thisWorkHistory) {
-      let company = cleanText(xpathEval("//span[contains(@class, 't-bold')]/span[@aria-hidden]", thisWorkHistory).iterateNext().textContent);
-      let position = cleanText(xpathEval("//span[contains(@class, 't-bold')]/span[@aria-hidden]", thisWork).iterateNext().textContent);
-      let durationInfo = cleanText(xpathEval("//span[contains(@class, 't-normal')]/span[@aria-hidden]", thisWork).iterateNext().textContent).split(" \xB7 ");
+      let company = cleanText(xpathEval(".//span[contains(@class, 't-bold')]/span[@aria-hidden]", thisWorkHistory).iterateNext().textContent);
+      let position = cleanText(xpathEval(".//span[contains(@class, 't-bold')]/span[@aria-hidden]", thisWork).iterateNext().textContent);
+      let durationInfo = cleanText(xpathEval(".//span[contains(@class, 't-normal')]/span[@aria-hidden]", thisWork).iterateNext().textContent).split(" \xB7 ");
       let totalDuration = durationInfo[1];
       let durationRange = durationInfo[0].split(" - ");
       let startDate = durationRange[0];
       let endDate = durationRange[durationRange.length - 1];
       workExperiences.push(new WorkExperience(company, position, totalDuration, startDate, endDate));
+      console.log(position);
     }
     thisWork = worksIterator.iterateNext();
   }
@@ -75,6 +76,7 @@ var scrapProfile = async () => {
     workSectionDropdown.click();
     await new Promise((r) => setTimeout(r, 8e3));
     workExperiences = scrapExperienceSection();
+    await new Promise((r) => setTimeout(r, 8e3));
     let returnButton = xpathEval("//button[contains(@aria-label, 'Volver')]", document).iterateNext();
     returnButton.click();
   } else {

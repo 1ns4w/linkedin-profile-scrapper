@@ -21,16 +21,21 @@ const scrapExperienceSection = () => {
 
         if (thisWorkHistory) {
             
-            let company = cleanText(xpathEval("//span[contains(@class, 't-bold')]/span[@aria-hidden]", thisWorkHistory).iterateNext().textContent)
-            let position = cleanText(xpathEval("//span[contains(@class, 't-bold')]/span[@aria-hidden]", thisWork).iterateNext().textContent)
-            let durationInfo = cleanText(xpathEval("//span[contains(@class, 't-normal')]/span[@aria-hidden]", thisWork).iterateNext().textContent).split(' · ');
+            let company = cleanText(xpathEval(".//span[contains(@class, 't-bold')]/span[@aria-hidden]", thisWorkHistory).iterateNext().textContent)
+            let position = cleanText(xpathEval(".//span[contains(@class, 't-bold')]/span[@aria-hidden]", thisWork).iterateNext().textContent)
+            let durationInfo = cleanText(xpathEval(".//span[contains(@class, 't-normal')]/span[@aria-hidden]", thisWork).iterateNext().textContent).split(' · ');
             let totalDuration = durationInfo[1]
             let durationRange = durationInfo[0].split(' - ')
             let startDate = durationRange[0]
             let endDate = durationRange[durationRange.length - 1]
 
             workExperiences.push(new WorkExperience(company, position, totalDuration, startDate, endDate))
+            console.log(position);
         }
+        thisWork = worksIterator.iterateNext();
+    }
+    return workExperiences;
+}
 
         /*
 
@@ -49,11 +54,6 @@ const scrapExperienceSection = () => {
 
         */
 
-        thisWork = worksIterator.iterateNext();
-    }
-    return workExperiences;
-}
-
 const scrapProfile = async () => {
 
     await loadPageContent();
@@ -68,6 +68,7 @@ const scrapProfile = async () => {
         workSectionDropdown.click();
         await new Promise(r => setTimeout(r, 8000));
         workExperiences = scrapExperienceSection();
+        await new Promise(r => setTimeout(r, 8000));
         let returnButton = xpathEval("//button[contains(@aria-label, 'Volver')]", document).iterateNext();
         returnButton.click();
     }

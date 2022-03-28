@@ -32,27 +32,24 @@ const scrapExperienceSection = () => {
             workExperiences.push(new WorkExperience(company, position, totalDuration, startDate, endDate))
             console.log(position);
         }
+
+        else {
+            let company = cleanText(xpathEval("", thisWork).iterateNext().textContent)
+            let position = cleanText(xpathEval("", thisWork).iterateNext().textContent)
+            let durationInfo = cleanText(xpathEval("", thisWork).iterateNext().textContent).split(' · ');
+            let totalDuration = durationInfo[1]
+            let durationRange = durationInfo[0].split(' - ')
+            let startDate = durationRange[0]
+            let endDate = durationRange[durationRange.length - 1]
+
+            workExperiences.push(new WorkExperience(company, position, totalDuration, startDate, endDate))
+            console.log(position);
+        }
+
         thisWork = worksIterator.iterateNext();
     }
     return workExperiences;
 }
-
-        /*
-
-        else {
-            let experienceData = xpathEval("./div/div[2]/div/div[1][./*]", workSectionsIterator).iterateNext();
-            let company = cleanText(xpathEval("./span[1]//span[@aria-hidden]", experienceData).iterateNext().textContent);
-            let durationData = cleanText(xpathEval("./span[2]//span[@aria-hidden]", experienceData).iterateNext().textContent).split(' · ');
-            let totalDuration = durationData[durationData.length - 1]
-            let workPositionName = cleanText(xpathEval("./div//span[@aria-hidden]", experienceData).iterateNext().textContent);
-            let dateRange = durationData[0].split(' - ')
-            let startDate = dateRange[0]
-            let endDate = dateRange[dateRange.length - 1]
-            let workPosition = new WorkPosition(workPositionName, totalDuration, startDate, endDate)
-            workExperiences.push(new WorkExperience(company, totalDuration, [workPosition]));
-        }
-
-        */
 
 const scrapProfile = async () => {
 

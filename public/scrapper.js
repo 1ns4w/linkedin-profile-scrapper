@@ -61,6 +61,8 @@ var scrapExperienceSection = () => {
       let endDate = durationRange[durationRange.length - 1];
       workExperiences.push(new WorkExperience(company, position, totalDuration, startDate, endDate));
       console.log(position);
+    } else {
+      console.log("Hello world!");
     }
     thisWork = worksIterator.iterateNext();
   }

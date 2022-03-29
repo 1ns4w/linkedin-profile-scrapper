@@ -53,6 +53,9 @@ var SECTION_ITEMS = `(.//ul)[1]/li[.//a[contains(@href, 'company') or contains(@
 var SECTION_ITEM_HISTORY_CLUE = "(.)/../../../../../../../../../div[1][./a]";
 var SECTION_ITEM_WITH_HISTORY_COMPANY_OR_POSITION = ".//span[contains(@class, 't-bold')]/span[@aria-hidden]";
 var SECTION_ITEM_WITH_HISTORY_DURATION_INFO = ".//span[contains(@class, 't-normal')]/span[@aria-hidden]";
+var SECTION_ITEM_COMPANY = "(.//span[contains(@class, 't-normal')]/span[@aria-hidden])[1]";
+var SECTION_ITEM_POSITION = ".//span[contains(@class, 't-bold')]/span[@aria-hidden]";
+var SECTION_ITEM_DURATION_INFO = "(.//span[contains(@class, 't-normal')]/span[@aria-hidden])[2]";
 
 // src/scrapper.js
 var findSection = (sectionClue) => {
@@ -68,6 +71,15 @@ var scrapVisibleSection = (section) => {
       let company = cleanText(evaluateXPath(SECTION_ITEM_WITH_HISTORY_COMPANY_OR_POSITION, thisSectionItemHistory).iterateNext().textContent);
       let position = cleanText(evaluateXPath(SECTION_ITEM_WITH_HISTORY_COMPANY_OR_POSITION, thisSectionItem).iterateNext().textContent);
       let durationInfo = cleanText(evaluateXPath(SECTION_ITEM_WITH_HISTORY_DURATION_INFO, thisSectionItem).iterateNext().textContent).split(" \xB7 ");
+      let totalDuration = durationInfo[1];
+      let durationRange = durationInfo[0].split(" - ");
+      let startDate = durationRange[0];
+      let endDate = durationRange[durationRange.length - 1];
+      itemsInformation.push(new WorkExperience(company, position, totalDuration, startDate, endDate));
+    } else {
+      let company = cleanText(evaluateXPath(SECTION_ITEM_COMPANY, thisSectionItem).iterateNext().textContent);
+      let position = cleanText(evaluateXPath(SECTION_ITEM_POSITION, thisSectionItem).iterateNext().textContent);
+      let durationInfo = cleanText(evaluateXPath(SECTION_ITEM_DURATION_INFO, thisSectionItem).iterateNext().textContent).split(" \xB7 ");
       let totalDuration = durationInfo[1];
       let durationRange = durationInfo[0].split(" - ");
       let startDate = durationRange[0];
@@ -93,14 +105,12 @@ var scrapSection = async (sectionName) => {
   } else {
     sectionInformation = scrapVisibleSection(section);
   }
-  console.log(sectionInformation);
   return sectionInformation;
 };
 var scrapProfile = async () => {
   await loadPageContent();
   let fullname = document.getElementsByTagName("h1")[0].textContent;
   let workExperience = await scrapSection("experience");
-  console.log(workExperience);
   let port = chrome.runtime.connect({ name: "safePort" });
   port.postMessage(new Person(fullname, workExperience));
 };

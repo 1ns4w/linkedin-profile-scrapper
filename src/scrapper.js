@@ -5,7 +5,7 @@ import { evaluateXPath } from "./modules/utils/evaluateXPath"
 import { cleanText} from "./modules/utils/cleantext"
 import { getSectionXPath } from "./modules/utils/getSectionXpath";
 import { hold } from "./modules/utils/hold";
-import { SECTION_DROPDOWN_CLUE, SECTION_ITEMS, SECTION_ITEM_HISTORY_CLUE, SECTION_ITEM_WITH_HISTORY_COMPANY_OR_POSITION, SECTION_ITEM_WITH_HISTORY_DURATION_INFO, SECTION_RETURN_CLUE } from "./modules/helpers/XPathConstants";
+import { SECTION_DROPDOWN_CLUE, SECTION_ITEMS, SECTION_ITEM_COMPANY, SECTION_ITEM_DURATION_INFO, SECTION_ITEM_HISTORY_CLUE, SECTION_ITEM_POSITION, SECTION_ITEM_WITH_HISTORY_COMPANY_OR_POSITION, SECTION_ITEM_WITH_HISTORY_DURATION_INFO, SECTION_RETURN_CLUE } from "./modules/helpers/XPathConstants";
 
 const findSection = (sectionClue) => {
     return evaluateXPath(getSectionXPath(sectionClue), document).iterateNext();

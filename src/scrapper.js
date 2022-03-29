@@ -4,7 +4,7 @@ import { loadPageContent } from "./modules/utils/autoscroll";
 import { evaluateXPath } from "./modules/utils/evaluateXPath"
 import { cleanText} from "./modules/utils/cleantext"
 import { getSectionXPath } from "./modules/utils/getSectionXpath";
-import { SECTION_DROPDOWN_CLUE, SECTION_RETURN_CLUE } from "./modules/helpers/XPathConstants";
+import { SECTION_DROPDOWN_CLUE, SECTION_ITEMS, SECTION_RETURN_CLUE } from "./modules/helpers/XPathConstants";
 
 const findSection = (sectionClue) => {
     return evaluateXPath(getSectionXPath(sectionClue), document).iterateNext();
@@ -12,12 +12,12 @@ const findSection = (sectionClue) => {
 
 const scrapVisibleSection = (section) => {
     
-    let worksIterator = xpathEval(XPATH_WORK_EXPERIENCE_CONTAINERS, document)
-    let thisWork = worksIterator.iterateNext();
+    let sectionItemsIterator = xpathEval(SECTION_ITEMS, document)
+    let thisSectionItem = itemsIterator.iterateNext();
 
-    let workExperiences = []
+    let itemsInformation = []
 
-    while (thisWork) {
+    while (thisSectionItem) {
 
         let thisWorkHistory = xpathEval(XPATH_WORK_EXPERIENCE_HISTORY_CLUE, thisWork).iterateNext();
 
@@ -31,7 +31,7 @@ const scrapVisibleSection = (section) => {
             let startDate = durationRange[0]
             let endDate = durationRange[durationRange.length - 1]
 
-            workExperiences.push(new WorkExperience(company, position, totalDuration, startDate, endDate))
+            itemsInformation.push(new WorkExperience(company, position, totalDuration, startDate, endDate))
         }
 
         else {
@@ -43,12 +43,12 @@ const scrapVisibleSection = (section) => {
             let startDate = durationRange[0]
             let endDate = durationRange[durationRange.length - 1]
 
-            workExperiences.push(new WorkExperience(company, position, totalDuration, startDate, endDate))
+            itemsInformation.push(new WorkExperience(company, position, totalDuration, startDate, endDate))
         }
 
-        thisWork = worksIterator.iterateNext();
+        thisSectionItem = sectionItemsIterator.iterateNext();
     }
-    return workExperiences;
+    return itemsInformation;
 }
 
 const scrapSection = async (section) => {
@@ -74,7 +74,7 @@ const scrapSection = async (section) => {
 
 const scrapProfile = async () => {
 
-    await loadPageContent();
+    loadPageContent();
 
     let fullname = document.getElementsByTagName("h1")[0].textContent
     let workSection = findSection("experience")

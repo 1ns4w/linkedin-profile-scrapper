@@ -84,7 +84,7 @@ const scrapProfile = async () => {
     let education = scrapSection(educationSection);
 
     let port = chrome.runtime.connect({name:'safePort'});
-    port.postMessage(new Person(fullname, workExperience));
+    port.postMessage(new Person(fullname, workExperience, education));
 }
 
 scrapProfile();

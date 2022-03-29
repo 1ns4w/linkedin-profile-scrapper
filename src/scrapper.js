@@ -1,15 +1,16 @@
 import { Person } from "./modules/models/Person";
 import { WorkExperience } from "./modules/models/Work";
 import { loadPageContent } from "./modules/utils/autoscroll";
-import { xpathEval } from "./modules/utils/xpath"
+import { evaluateXPath } from "./modules/utils/evaluateXPath"
 import { cleanText} from "./modules/utils/cleantext"
-import { XPATH_HISTORY_WORK_EXPERIENCE_COMPANY_OR_POSITION, XPATH_HISTORY_WORK_EXPERIENCE_DURATION_INFO, XPATH_SECTION, XPATH_WORK_EXPERIENCE_COMPANY, XPATH_WORK_EXPERIENCE_CONTAINERS, XPATH_WORK_EXPERIENCE_DROPDOWN_CLUE, XPATH_WORK_EXPERIENCE_DURATION_INFO, XPATH_WORK_EXPERIENCE_HISTORY_CLUE, XPATH_WORK_EXPERIENCE_POSITION, XPATH_WORK_EXPERIENCE_RETURN_CLUE } from "../config/env";
+import { getSectionXPath } from "./modules/utils/getSectionXpath";
+import { SECTION_DROPDOWN_CLUE, SECTION_RETURN_CLUE } from "./modules/helpers/XPathConstants";
 
-const findSection = (sectionName) => {
-    return xpathEval(XPATH_SECTION(sectionName), document).iterateNext();
+const findSection = (sectionClue) => {
+    return evaluateXPath(getSectionXPath(sectionClue), document).iterateNext();
 }
 
-const scrapExperienceSection = () => {
+const scrapVisibleSection = (section) => {
     
     let worksIterator = xpathEval(XPATH_WORK_EXPERIENCE_CONTAINERS, document)
     let thisWork = worksIterator.iterateNext();
@@ -50,31 +51,40 @@ const scrapExperienceSection = () => {
     return workExperiences;
 }
 
+const scrapSection = async (section) => {
+
+    let sectionInformation;
+    let sectionDropdown = evaluateXPath(SECTION_DROPDOWN_CLUE, section).iterateNext()
+
+    if (sectionDropdown) {
+        sectionDropdown.click();
+        await sleep(8);
+        sectionInformation = scrapVisibleSection(section);
+        await sleep(8);
+        let returnButton = xpathEval(SECTION_RETURN_CLUE, document).iterateNext();
+        returnButton.click();
+    }
+
+    else {
+        sectionInformation = scrapVisibleSection(section);
+    }
+
+    return sectionInformation;
+}
+
 const scrapProfile = async () => {
 
     await loadPageContent();
 
     let fullname = document.getElementsByTagName("h1")[0].textContent
-    let workExperiences;
-
     let workSection = findSection("experience")
-    let workSectionDropdown = xpathEval(XPATH_WORK_EXPERIENCE_DROPDOWN_CLUE, workSection).iterateNext()
+    let educationSection = findSection("education")
 
-    if (workSectionDropdown) {
-        workSectionDropdown.click();
-        await new Promise(r => setTimeout(r, 8000));
-        workExperiences = scrapExperienceSection();
-        await new Promise(r => setTimeout(r, 8000));
-        let returnButton = xpathEval(XPATH_WORK_EXPERIENCE_RETURN_CLUE, document).iterateNext();
-        returnButton.click();
-    }
-
-    else {
-        workExperiences = scrapExperienceSection();
-    }
+    let workExperience = scrapSection(workSection);
+    let education = scrapSection(educationSection);
 
     let port = chrome.runtime.connect({name:'safePort'});
-    port.postMessage(new Person(fullname, workExperiences));
+    port.postMessage(new Person(fullname, workExperience));
 }
 
 scrapProfile();

@@ -104,13 +104,11 @@ var scrapSection = async (sectionName) => {
   if (sectionDropdown) {
     sectionDropdown.click();
     await sleep(8);
-    console.log("sleep1");
     let expandedSection = findSection(sectionName);
     sectionInformation = await scrapVisibleSection(expandedSection);
     let returnButton = evaluateXPath(SECTION_RETURN_CLUE, expandedSection).iterateNext();
     returnButton.click();
     await sleep(4);
-    console.log("sleep2");
   } else {
     sectionInformation = scrapVisibleSection(section);
   }

@@ -48,6 +48,11 @@ var getSectionXPath = (sectionName) => {
   return `//section[./div[@id='${sectionName}' or .//h2[contains(@class, 't-20')]]]/div[count(./../div)]`;
 };
 
+// src/modules/utils/sleep.js
+var sleep = (seconds) => {
+  return new Promise((r) => setTimeout(r, seconds * 1e3));
+};
+
 // src/modules/helpers/XPathConstants.js
 var SECTION_DROPDOWN_CLUE = "./div/a";
 var SECTION_RETURN_CLUE = "./..//button[contains(@aria-label, 'Volver')]";
@@ -63,7 +68,7 @@ var SECTION_ITEM_DURATION_INFO = "(.//span[contains(@class, 't-normal')]/span[@a
 var findSection = (sectionClue) => {
   return evaluateXPath(getSectionXPath(sectionClue), document).iterateNext();
 };
-var scrapVisibleSection = (section) => {
+var scrapVisibleSection = async (section) => {
   let sectionItemsIterator = evaluateXPath(SECTION_ITEMS, section);
   let thisSectionItem = sectionItemsIterator.iterateNext();
   let itemsInformation = [];
@@ -98,12 +103,14 @@ var scrapSection = async (sectionName) => {
   let sectionDropdown = evaluateXPath(SECTION_DROPDOWN_CLUE, section).iterateNext();
   if (sectionDropdown) {
     sectionDropdown.click();
-    await new Promise((r) => setTimeout(r, 8e3));
+    await sleep(8);
+    console.log("sleep1");
     let expandedSection = findSection(sectionName);
-    sectionInformation = scrapVisibleSection(expandedSection);
-    await new Promise((r) => setTimeout(r, 8e3));
+    sectionInformation = await scrapVisibleSection(expandedSection);
     let returnButton = evaluateXPath(SECTION_RETURN_CLUE, expandedSection).iterateNext();
     returnButton.click();
+    await sleep(4);
+    console.log("sleep2");
   } else {
     sectionInformation = scrapVisibleSection(section);
   }

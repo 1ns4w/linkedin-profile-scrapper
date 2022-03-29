@@ -1,8 +1,9 @@
 // src/modules/models/Person.js
 var Person = class {
-  constructor(name, workExperience) {
+  constructor(name, workExperience, education) {
     this.name = name;
     this.workExperience = workExperience;
+    this.education = education;
   }
 };
 
@@ -111,7 +112,8 @@ var scrapProfile = async () => {
   await loadPageContent();
   let fullname = document.getElementsByTagName("h1")[0].textContent;
   let workExperience = await scrapSection("experience");
+  let education = await scrapSection("education");
   let port = chrome.runtime.connect({ name: "safePort" });
-  port.postMessage(new Person(fullname, workExperience));
+  port.postMessage(new Person(fullname, workExperience, education));
 };
 scrapProfile();

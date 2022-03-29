@@ -99,7 +99,7 @@ var scrapSection = async (sectionName) => {
 var scrapProfile = async () => {
   await loadPageContent();
   let fullname = document.getElementsByTagName("h1")[0].textContent;
-  let workExperience = scrapSection("experience");
+  let workExperience = await scrapSection("experience");
   console.log(workExperience);
   let port = chrome.runtime.connect({ name: "safePort" });
   port.postMessage(new Person(fullname, workExperience));

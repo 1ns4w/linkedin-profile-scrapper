@@ -35,12 +35,10 @@ const scrapVisibleSection = (section) => {
             itemsInformation.push(new WorkExperience(company, position, totalDuration, startDate, endDate))
         }
 
-        /*
-
         else {
-            let company = cleanText(xpathEval(XPATH_WORK_EXPERIENCE_COMPANY, thisWork).iterateNext().textContent)
-            let position = cleanText(xpathEval(XPATH_WORK_EXPERIENCE_POSITION, thisWork).iterateNext().textContent)
-            let durationInfo = cleanText(xpathEval(XPATH_WORK_EXPERIENCE_DURATION_INFO, thisWork).iterateNext().textContent).split(' · ');
+            let company = cleanText(evaluateXPath(SECTION_ITEM_COMPANY, thisSectionItem).iterateNext().textContent)
+            let position = cleanText(evaluateXPath(SECTION_ITEM_POSITION, thisSectionItem).iterateNext().textContent)
+            let durationInfo = cleanText(evaluateXPath(SECTION_ITEM_DURATION_INFO, thisSectionItem).iterateNext().textContent).split(' · ');
             let totalDuration = durationInfo[1]
             let durationRange = durationInfo[0].split(' - ')
             let startDate = durationRange[0]
@@ -48,8 +46,6 @@ const scrapVisibleSection = (section) => {
 
             itemsInformation.push(new WorkExperience(company, position, totalDuration, startDate, endDate))
         }
-
-        */
 
         thisSectionItem = sectionItemsIterator.iterateNext();
     }
@@ -75,7 +71,6 @@ const scrapSection = async (sectionName) => {
     else {
         sectionInformation = scrapVisibleSection(section);
     }
-    console.log(sectionInformation);
     return sectionInformation;
 }
 
@@ -85,8 +80,6 @@ const scrapProfile = async () => {
 
     let fullname = document.getElementsByTagName("h1")[0].textContent
     let workExperience = await scrapSection("experience")
-
-    console.log(workExperience)
 
     let port = chrome.runtime.connect({name:'safePort'});
     port.postMessage(new Person(fullname, workExperience));

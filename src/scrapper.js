@@ -81,9 +81,10 @@ const scrapProfile = async () => {
     let fullname = document.getElementsByTagName("h1")[0].textContent;
     let workExperience = await scrapSection("experience");
     let education = await scrapSection("education");
+    let volunteeringExperience = await scrapSection("volunteering_experience");
 
     let port = chrome.runtime.connect({name:'safePort'});
-    port.postMessage(new Person(fullname, workExperience, education));
+    port.postMessage(new Person(fullname, workExperience, education, volunteeringExperience));
 }
 
 scrapProfile();

@@ -48,7 +48,7 @@ var getSectionXPath = (sectionName) => {
 
 // src/modules/helpers/XPathConstants.js
 var SECTION_DROPDOWN_CLUE = "./div/a";
-var SECTION_RETURN_CLUE = "//button[contains(@aria-label, 'Volver')]";
+var SECTION_RETURN_CLUE = "/..//button[contains(@aria-label, 'Volver')]";
 var SECTION_ITEMS = `(.//ul)[1]/li[.//a[contains(@href, 'company') or contains(@href, 'linkedin.com/search')]]//div[contains(@class, 'pvs-entity') and count(./div) = 2 and not(.//span[contains(@class, 'pvs-entity__path-node')])]`;
 var SECTION_ITEM_HISTORY_CLUE = "(.)/../../../../../../../../../div[1][./a]";
 var SECTION_ITEM_WITH_HISTORY_COMPANY_OR_POSITION = ".//span[contains(@class, 't-bold')]/span[@aria-hidden]";

@@ -86,4 +86,4 @@ const scrapProfile = async () => {
     port.postMessage(new Person(fullname, workExperience, education));
 }
 
-await scrapProfile();
+scrapProfile();

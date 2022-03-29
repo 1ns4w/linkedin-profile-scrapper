@@ -116,4 +116,4 @@ var scrapProfile = async () => {
   let port = chrome.runtime.connect({ name: "safePort" });
   port.postMessage(new Person(fullname, workExperience, education));
 };
-scrapProfile();
+await scrapProfile();

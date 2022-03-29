@@ -1,8 +1,9 @@
 // src/modules/models/Person.js
 var Person = class {
-  constructor(name, workExperience) {
+  constructor(name, workExperience, education) {
     this.name = name;
     this.workExperience = workExperience;
+    this.education = education;
   }
 };
 
@@ -31,8 +32,8 @@ var loadPageContent = async (loadingDelaySeconds = 3) => {
   }
 };
 
-// src/modules/utils/xpath.js
-var xpathEval = (expression, node) => {
+// src/modules/utils/evaluateXPath.js
+var evaluateXPath = (expression, node) => {
   return document.evaluate(expression, node, null, XPathResult.ANY_TYPE, null);
 };
 
@@ -41,68 +42,71 @@ var cleanText = (text) => {
   return text.match(/[^\s|\n]+/ig).join(" ");
 };
 
-// config/env.js
-var XPATH_SECTION = (sectionName) => `//section[./div[@id="${sectionName}"]]/div[3]`;
-var XPATH_WORK_EXPERIENCE_CONTAINERS = "(//section[.//span[contains(text(), 'Experiencia')] or .//h2[contains(@class, 't-20')]]//ul)[1]/li[.//a[contains(@href, 'company') or contains(@href, 'linkedin.com/search')]]//div[contains(@class, 'pvs-entity') and count(./div) = 2 and not(.//span[contains(@class, 'pvs-entity__path-node')])]";
-var XPATH_WORK_EXPERIENCE_HISTORY_CLUE = "(.)/../../../../../../../../../div[1][./a]";
-var XPATH_HISTORY_WORK_EXPERIENCE_COMPANY_OR_POSITION = ".//span[contains(@class, 't-bold')]/span[@aria-hidden]";
-var XPATH_HISTORY_WORK_EXPERIENCE_DURATION_INFO = ".//span[contains(@class, 't-normal')]/span[@aria-hidden]";
-var XPATH_WORK_EXPERIENCE_COMPANY = "(.//span[contains(@class, 't-normal')]/span[@aria-hidden])[1]";
-var XPATH_WORK_EXPERIENCE_POSITION = ".//span[contains(@class, 't-bold')]/span[@aria-hidden]";
-var XPATH_WORK_EXPERIENCE_DURATION_INFO = "(.//span[contains(@class, 't-normal')]/span[@aria-hidden])[2]";
-var XPATH_WORK_EXPERIENCE_RETURN_CLUE = "//button[contains(@aria-label, 'Volver')]";
-var XPATH_WORK_EXPERIENCE_DROPDOWN_CLUE = "./div/a";
+// src/modules/utils/getSectionXpath.js
+var getSectionXPath = (sectionName) => {
+  return `//section[./div[@id='${sectionName}' or .//h2[contains(@class, 't-20')]]]/div[3]`;
+};
+
+// src/modules/utils/hold.js
+var hold = (seconds) => {
+  return new Promise((r) => setTimeout(r, seconds * 1e3));
+};
+
+// src/modules/helpers/XPathConstants.js
+var SECTION_DROPDOWN_CLUE = "./div/a";
+var SECTION_RETURN_CLUE = "//button[contains(@aria-label, 'Volver')]";
+var SECTION_ITEMS = `(.//ul)[1]/li[.//a[contains(@href, 'company') or contains(@href, 'linkedin.com/search')]]//div[contains(@class, 'pvs-entity') and count(./div) = 2 and not(.//span[contains(@class, 'pvs-entity__path-node')])]`;
+var SECTION_ITEM_HISTORY_CLUE = "(.)/../../../../../../../../../div[1][./a]";
+var SECTION_ITEM_WITH_HISTORY_COMPANY_OR_POSITION = ".//span[contains(@class, 't-bold')]/span[@aria-hidden]";
+var SECTION_ITEM_WITH_HISTORY_DURATION_INFO = ".//span[contains(@class, 't-normal')]/span[@aria-hidden]";
 
 // src/scrapper.js
-var findSection = (sectionName) => {
-  return xpathEval(XPATH_SECTION(sectionName), document).iterateNext();
+var findSection = (sectionClue) => {
+  return evaluateXPath(getSectionXPath(sectionClue), document).iterateNext();
 };
-var scrapExperienceSection = () => {
-  let worksIterator = xpathEval(XPATH_WORK_EXPERIENCE_CONTAINERS, document);
-  let thisWork = worksIterator.iterateNext();
-  let workExperiences = [];
-  while (thisWork) {
-    let thisWorkHistory = xpathEval(XPATH_WORK_EXPERIENCE_HISTORY_CLUE, thisWork).iterateNext();
-    if (thisWorkHistory) {
-      let company = cleanText(xpathEval(XPATH_HISTORY_WORK_EXPERIENCE_COMPANY_OR_POSITION, thisWorkHistory).iterateNext().textContent);
-      let position = cleanText(xpathEval(XPATH_HISTORY_WORK_EXPERIENCE_COMPANY_OR_POSITION, thisWork).iterateNext().textContent);
-      let durationInfo = cleanText(xpathEval(XPATH_HISTORY_WORK_EXPERIENCE_DURATION_INFO, thisWork).iterateNext().textContent).split(" \xB7 ");
+var scrapVisibleSection = (section) => {
+  let sectionItemsIterator = evaluateXPath(SECTION_ITEMS, section);
+  let thisSectionItem = sectionItemsIterator.iterateNext();
+  let itemsInformation = [];
+  while (thisSectionItem) {
+    let thisSectionItemHistory = evaluateXPath(SECTION_ITEM_HISTORY_CLUE, thisSectionItem).iterateNext();
+    if (thisSectionItemHistory) {
+      let company = cleanText(evaluateXPath(SECTION_ITEM_WITH_HISTORY_COMPANY_OR_POSITION, thisSectionItemHistory).iterateNext().textContent);
+      let position = cleanText(evaluateXPath(SECTION_ITEM_WITH_HISTORY_COMPANY_OR_POSITION, thisSectionItem).iterateNext().textContent);
+      let durationInfo = cleanText(evaluateXPath(SECTION_ITEM_WITH_HISTORY_DURATION_INFO, thisSectionItem).iterateNext().textContent).split(" \xB7 ");
       let totalDuration = durationInfo[1];
       let durationRange = durationInfo[0].split(" - ");
       let startDate = durationRange[0];
       let endDate = durationRange[durationRange.length - 1];
-      workExperiences.push(new WorkExperience(company, position, totalDuration, startDate, endDate));
-    } else {
-      let company = cleanText(xpathEval(XPATH_WORK_EXPERIENCE_COMPANY, thisWork).iterateNext().textContent);
-      let position = cleanText(xpathEval(XPATH_WORK_EXPERIENCE_POSITION, thisWork).iterateNext().textContent);
-      let durationInfo = cleanText(xpathEval(XPATH_WORK_EXPERIENCE_DURATION_INFO, thisWork).iterateNext().textContent).split(" \xB7 ");
-      let totalDuration = durationInfo[1];
-      let durationRange = durationInfo[0].split(" - ");
-      let startDate = durationRange[0];
-      let endDate = durationRange[durationRange.length - 1];
-      workExperiences.push(new WorkExperience(company, position, totalDuration, startDate, endDate));
+      itemsInformation.push(new WorkExperience(company, position, totalDuration, startDate, endDate));
     }
-    thisWork = worksIterator.iterateNext();
+    thisSectionItem = sectionItemsIterator.iterateNext();
   }
-  return workExperiences;
+  return itemsInformation;
+};
+var scrapSection = async (section) => {
+  let sectionInformation;
+  let sectionDropdown = evaluateXPath(SECTION_DROPDOWN_CLUE, section).iterateNext();
+  if (sectionDropdown) {
+    sectionDropdown.click();
+    await hold(8);
+    sectionInformation = scrapVisibleSection(section);
+    await hold(8);
+    let returnButton = evaluateXPath(SECTION_RETURN_CLUE, document).iterateNext();
+    returnButton.click();
+  } else {
+    sectionInformation = scrapVisibleSection(section);
+  }
+  return sectionInformation;
 };
 var scrapProfile = async () => {
   await loadPageContent();
   let fullname = document.getElementsByTagName("h1")[0].textContent;
-  let workExperiences;
   let workSection = findSection("experience");
-  let workSectionDropdown = xpathEval(XPATH_WORK_EXPERIENCE_DROPDOWN_CLUE, workSection).iterateNext();
-  if (workSectionDropdown) {
-    workSectionDropdown.click();
-    await new Promise((r) => setTimeout(r, 8e3));
-    workExperiences = scrapExperienceSection();
-    await new Promise((r) => setTimeout(r, 8e3));
-    let returnButton = xpathEval(XPATH_WORK_EXPERIENCE_RETURN_CLUE, document).iterateNext();
-    returnButton.click();
-  } else {
-    workExperiences = scrapExperienceSection();
-  }
+  let educationSection = findSection("education");
+  let workExperience = scrapSection(workSection);
+  let education = scrapSection(educationSection);
   let port = chrome.runtime.connect({ name: "safePort" });
-  port.postMessage(new Person(fullname, workExperiences));
+  port.postMessage(new Person(fullname, workExperience, education));
 };
 scrapProfile();

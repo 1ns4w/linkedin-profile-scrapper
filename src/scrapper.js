@@ -56,24 +56,26 @@ const scrapVisibleSection = (section) => {
     return itemsInformation;
 }
 
-const scrapSection = async (section) => {
+const scrapSection = async (sectionName) => {
 
     let sectionInformation;
+    let section = findSection(sectionName);
     let sectionDropdown = evaluateXPath(SECTION_DROPDOWN_CLUE, section).iterateNext()
 
     if (sectionDropdown) {
         sectionDropdown.click();
-        await hold(8);
-        sectionInformation = scrapVisibleSection(section);
-        await hold(8);
-        let returnButton = evaluateXPath(SECTION_RETURN_CLUE, document).iterateNext();
+        await new Promise(r => setTimeout(r, 8000));
+        let expandedSection = findSection(sectionName);
+        sectionInformation = scrapVisibleSection(expandedSection);
+        await new Promise(r => setTimeout(r, 8000));
+        let returnButton = evaluateXPath(SECTION_RETURN_CLUE, expandedSection).iterateNext();
         returnButton.click();
     }
 
     else {
         sectionInformation = scrapVisibleSection(section);
     }
-
+    console.log(section)
     return sectionInformation;
 }
 
@@ -82,14 +84,16 @@ const scrapProfile = async () => {
     await loadPageContent();
 
     let fullname = document.getElementsByTagName("h1")[0].textContent
-    let workSection = findSection("experience")
-    let educationSection = findSection("education")
+    let workExperience = scrapSection("experience")
 
-    let workExperience = scrapSection(workSection);
-    let education = scrapSection(educationSection);
+    console.log(workSection)
+    //let educationSection = findSection("education")
+
+    //let workExperience = scrapSection(workSection);
+    //let education = scrapSection(educationSection);
 
     let port = chrome.runtime.connect({name:'safePort'});
-    port.postMessage(new Person(fullname, workExperience, education));
+    port.postMessage(new Person(fullname, workExperience));
 }
 
 scrapProfile();

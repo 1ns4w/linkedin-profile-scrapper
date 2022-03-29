@@ -1,7 +1,6 @@
 export class Person {
-    constructor(name, workExperience, education) {
+    constructor(name, workExperience) {
         this.name = name;
         this.workExperience = workExperience;
-        this.education = education;
     }
 }

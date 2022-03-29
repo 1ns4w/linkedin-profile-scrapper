@@ -84,7 +84,7 @@ const scrapProfile = async () => {
     await loadPageContent();
 
     let fullname = document.getElementsByTagName("h1")[0].textContent
-    let workExperience = scrapSection("experience")
+    let workExperience = await scrapSection("experience")
 
     console.log(workExperience)
 

@@ -75,7 +75,7 @@ const scrapSection = async (sectionName) => {
     else {
         sectionInformation = scrapVisibleSection(section);
     }
-    console.log(section)
+    console.log(sectionInformation);
     return sectionInformation;
 }
 
@@ -86,11 +86,7 @@ const scrapProfile = async () => {
     let fullname = document.getElementsByTagName("h1")[0].textContent
     let workExperience = scrapSection("experience")
 
-    console.log(workSection)
-    //let educationSection = findSection("education")
-
-    //let workExperience = scrapSection(workSection);
-    //let education = scrapSection(educationSection);
+    console.log(workExperience)
 
     let port = chrome.runtime.connect({name:'safePort'});
     port.postMessage(new Person(fullname, workExperience));
